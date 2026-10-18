@@ -1,0 +1,301 @@
+
+PLAY [Verify connectivity and prepare student] *********************************
+
+TASK [Ping managed servers] ****************************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [Check if student exists] *************************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [Gather facts for initial setup] ******************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [Create student on first run] *********************************************
+included: common for ubuntu, fedora
+
+TASK [common : Create student user] ********************************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [common : Configure SSH key for student] **********************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [common : Allow student to use sudo] **************************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [Switch Ansible connection to student] ************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [Reset SSH connection] ****************************************************
+
+TASK [Reset SSH connection] ****************************************************
+
+TASK [Verify student sudo access] **********************************************
+ok: [ubuntu]
+ok: [fedora]
+
+PLAY [Configure managed servers] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [common : Create student user] ********************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [common : Configure SSH key for student] **********************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [common : Allow student to use sudo] **************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [common : Read existing group memberships] ********************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [common : Remove bootstrap user from admin groups] ************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [common : Remove Fedora bootstrap sudoers rule] ***************************
+skipping: [ubuntu]
+ok: [fedora]
+
+TASK [common : Update Ubuntu packages] *****************************************
+skipping: [fedora]
+changed: [ubuntu]
+
+TASK [common : Ensure Fedora reboot checker is installed] **********************
+skipping: [ubuntu]
+ok: [fedora]
+
+TASK [common : Update Fedora packages] *****************************************
+skipping: [ubuntu]
+changed: [fedora]
+
+TASK [common : Check Ubuntu reboot requirement] ********************************
+skipping: [fedora]
+ok: [ubuntu]
+
+TASK [common : Check Fedora reboot requirement] ********************************
+skipping: [ubuntu]
+ok: [fedora]
+
+TASK [common : Request Ubuntu reboot when required] ****************************
+changed: [ubuntu] => {
+    "msg": "Ubuntu requires a reboot"
+}
+skipping: [fedora]
+
+TASK [common : Request Fedora reboot when required] ****************************
+skipping: [ubuntu]
+changed: [fedora] => {
+    "msg": "Fedora requires a reboot"
+}
+
+TASK [common : Run pending reboot handler] *************************************
+
+TASK [common : Run pending reboot handler] *************************************
+
+RUNNING HANDLER [common : Reboot server] ***************************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Remove conflicting Ubuntu Docker packages] **********************
+skipping: [fedora]
+ok: [ubuntu]
+
+TASK [docker : Install Ubuntu Docker repository prerequisites] *****************
+skipping: [fedora]
+ok: [ubuntu]
+
+TASK [docker : Create Docker keyrings directory] *******************************
+skipping: [fedora]
+ok: [ubuntu]
+
+TASK [docker : Download official Docker GPG key] *******************************
+skipping: [fedora]
+changed: [ubuntu]
+
+TASK [docker : Add official Docker APT repository] *****************************
+skipping: [fedora]
+changed: [ubuntu]
+
+TASK [docker : Install RPM Python bindings on Fedora] **************************
+skipping: [ubuntu]
+ok: [fedora]
+
+TASK [docker : Gather installed Fedora packages] *******************************
+skipping: [ubuntu]
+ok: [fedora]
+
+TASK [docker : Remove installed conflicting Fedora packages] *******************
+skipping: [ubuntu]
+skipping: [fedora]
+
+TASK [docker : Add official Docker RPM repository] *****************************
+skipping: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Apply repository changes before Docker installation] ************
+
+TASK [docker : Apply repository changes before Docker installation] ************
+
+RUNNING HANDLER [docker : Refresh Docker APT cache] ****************************
+changed: [ubuntu]
+
+TASK [docker : Import official Docker GPG key on Fedora] ***********************
+skipping: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Install Docker Engine on Ubuntu] ********************************
+skipping: [fedora]
+changed: [ubuntu]
+
+TASK [docker : Install Docker Engine on Fedora] ********************************
+skipping: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Start and enable Docker service] ********************************
+ok: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Add student to Docker group] ************************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Refresh SSH connection after Docker group membership] ***********
+
+TASK [docker : Refresh SSH connection after Docker group membership] ***********
+
+TASK [docker : Ensure Docker configuration directory exists] *******************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [docker : Configure Docker log rotation] **********************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Apply pending Docker configuration changes] *********************
+
+TASK [docker : Apply pending Docker configuration changes] *********************
+
+RUNNING HANDLER [docker : Restart docker] **************************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Install Python requests for Docker authentication] **************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [docker : Create student Docker configuration directory] ******************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Login to Docker Hub as student] *********************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [docker : Protect Docker Hub credentials file] ****************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [app : Run nginx application container] ***********************************
+changed: [ubuntu]
+changed: [fedora]
+
+TASK [app : Wait for nginx port 8080] ******************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [app : Read application environment variables] ****************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [app : Show application environment variables] ****************************
+ok: [ubuntu] => {
+    "msg": [
+        "APP_NAME=exam-app",
+        "APP_ENV=production",
+        "APP_PORT=80"
+    ]
+}
+ok: [fedora] => {
+    "msg": [
+        "APP_NAME=exam-app",
+        "APP_ENV=production",
+        "APP_PORT=80"
+    ]
+}
+
+TASK [app : Verify application environment variables] **************************
+ok: [ubuntu] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+ok: [fedora] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [app : Read nginx container logs] *****************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [app : Show nginx container logs] *****************************************
+ok: [ubuntu] => {
+    "msg": [
+        "/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration\n/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh\n10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf\n10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf\n/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh\n/docker-entrypoint.sh: Configuration complete; ready for start up",
+        "2026/10/18 14:16:28 [notice] 1#1: using the \"epoll\" event method\n2026/10/18 14:16:28 [notice] 1#1: nginx/1.31.7\n2026/10/18 14:16:28 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) \n2026/10/18 14:16:28 [notice] 1#1: OS: Linux 6.8.0-138-generic\n2026/10/18 14:16:28 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1024:524288\n2026/10/18 14:16:28 [notice] 1#1: start worker processes\n2026/10/18 14:16:28 [notice] 1#1: start worker process 30\n2026/10/18 14:16:28 [notice] 1#1: start worker process 31"
+    ]
+}
+ok: [fedora] => {
+    "msg": [
+        "/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration\n/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh\n10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf\n10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf\n/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh\n/docker-entrypoint.sh: Configuration complete; ready for start up",
+        "2026/10/18 14:16:28 [notice] 1#1: using the \"epoll\" event method\n2026/10/18 14:16:28 [notice] 1#1: nginx/1.31.7\n2026/10/18 14:16:28 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) \n2026/10/18 14:16:28 [notice] 1#1: OS: Linux 7.2.11-200.fc44.x86_64\n2026/10/18 14:16:28 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1024:524288\n2026/10/18 14:16:28 [notice] 1#1: start worker processes\n2026/10/18 14:16:28 [notice] 1#1: start worker process 30\n2026/10/18 14:16:28 [notice] 1#1: start worker process 31"
+    ]
+}
+
+TASK [app : Create local logs directory] ***************************************
+changed: [ubuntu -> localhost]
+ok: [fedora -> localhost]
+
+TASK [app : Save container logs on MASTER] *************************************
+changed: [ubuntu -> localhost]
+changed: [fedora -> localhost]
+
+TASK [app : Test nginx HTTP response] ******************************************
+ok: [ubuntu]
+ok: [fedora]
+
+TASK [app : Show HTTP status and response body] ********************************
+ok: [ubuntu] => {
+    "msg": {
+        "body": "<!DOCTYPE html>\n<html>\n<head>\n<title>Welcome to nginx!</title>\n<style>\nhtml { color-scheme: light dark; }\nbody { width: 35em; margin: 0 auto;\nfont-family: Tahoma, Verdana, Arial, sans-serif; }\n</style>\n</head>\n<body>\n<h1>Welcome to nginx!</h1>\n<p>If you see this page, nginx is successfully installed and working.\nFurther configuration is required for the web server, reverse proxy, \nAPI gateway, load balancer, content cache, or other features.</p>\n\n<p>For online documentation and support please refer to\n<a href=\"https://nginx.org/\">nginx.org</a>.<br/>\nTo engage with the community please visit\n<a href=\"https://community.nginx.org/\">community.nginx.org</a>.<br/>\nFor enterprise grade support, professional services, additional \nsecurity features and capabilities please refer to\n<a href=\"https://f5.com/nginx\">f5.com/nginx</a>.</p>\n\n<p><em>Thank you for using nginx.</em></p>\n</body>\n</html>\n",
+        "status": 200
+    }
+}
+ok: [fedora] => {
+    "msg": {
+        "body": "<!DOCTYPE html>\n<html>\n<head>\n<title>Welcome to nginx!</title>\n<style>\nhtml { color-scheme: light dark; }\nbody { width: 35em; margin: 0 auto;\nfont-family: Tahoma, Verdana, Arial, sans-serif; }\n</style>\n</head>\n<body>\n<h1>Welcome to nginx!</h1>\n<p>If you see this page, nginx is successfully installed and working.\nFurther configuration is required for the web server, reverse proxy, \nAPI gateway, load balancer, content cache, or other features.</p>\n\n<p>For online documentation and support please refer to\n<a href=\"https://nginx.org/\">nginx.org</a>.<br/>\nTo engage with the community please visit\n<a href=\"https://community.nginx.org/\">community.nginx.org</a>.<br/>\nFor enterprise grade support, professional services, additional \nsecurity features and capabilities please refer to\n<a href=\"https://f5.com/nginx\">f5.com/nginx</a>.</p>\n\n<p><em>Thank you for using nginx.</em></p>\n</body>\n</html>\n",
+        "status": 200
+    }
+}
+
+TASK [app : Save HTTP response on MASTER] **************************************
+changed: [ubuntu -> localhost]
+changed: [fedora -> localhost]
+
+PLAY RECAP *********************************************************************
+fedora                     : ok=47   changed=19   unreachable=0    failed=0    skipped=10   rescued=0    ignored=0   
+ubuntu                     : ok=47   changed=20   unreachable=0    failed=0    skipped=11   rescued=0    ignored=0   
+

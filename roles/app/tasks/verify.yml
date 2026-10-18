@@ -1,0 +1,88 @@
+---
+- name: Wait for nginx port 8080
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 8080
+    state: started
+    timeout: 60
+  become: false
+
+- name: Read application environment variables
+  community.docker.docker_container_exec:
+    container: exam-app
+    command: env
+  become: false
+  register: app_environment
+  changed_when: false
+
+- name: Show application environment variables
+  ansible.builtin.debug:
+    msg: "{{ app_environment.stdout_lines | select('match', '^APP_') | list }}"
+
+- name: Verify application environment variables
+  ansible.builtin.assert:
+    that:
+      - app_expected_vars | difference(app_environment.stdout_lines) | length == 0
+    fail_msg: "Application environment variables do not match app.env"
+  vars:
+    app_expected_vars: "{{ lookup('ansible.builtin.file', playbook_dir ~ '/files/app.env').splitlines() }}"
+
+- name: Read nginx container logs
+  ansible.builtin.command:
+    argv:
+      - docker
+      - logs
+      - exam-app
+  become: false
+  register: app_container_logs
+  changed_when: false
+
+- name: Show nginx container logs
+  ansible.builtin.debug:
+    msg:
+      - "{{ app_container_logs.stdout }}"
+      - "{{ app_container_logs.stderr }}"
+
+- name: Create local logs directory
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/logs"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+  become: false
+
+- name: Save container logs on MASTER
+  ansible.builtin.copy:
+    content: |
+      {{ app_container_logs.stdout }}
+      {{ app_container_logs.stderr }}
+    dest: "{{ playbook_dir }}/logs/{{ inventory_hostname }}.log"
+    mode: '0644'
+    force: false
+  delegate_to: localhost
+  become: false
+
+- name: Test nginx HTTP response
+  ansible.builtin.uri:
+    url: http://127.0.0.1:8080/
+    method: GET
+    return_content: true
+    status_code: 200
+  become: false
+  register: app_http_response
+
+- name: Show HTTP status and response body
+  ansible.builtin.debug:
+    msg:
+      status: "{{ app_http_response.status }}"
+      body: "{{ app_http_response.content }}"
+
+- name: Save HTTP response on MASTER
+  ansible.builtin.copy:
+    content: |
+      HTTP status: {{ app_http_response.status }}
+      {{ app_http_response.content }}
+    dest: "{{ playbook_dir }}/logs/{{ inventory_hostname }}-http.log"
+    mode: '0644'
+  delegate_to: localhost
+  become: false

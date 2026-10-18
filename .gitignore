@@ -1,0 +1,20 @@
+# Backup files
+*.backup
+*.save
+*.retry
+*.swp
+*~
+
+# Python and Ansible temporary files
+__pycache__/
+*.pyc
+.ansible/
+.venv/
+
+# Private keys and local secrets
+*.pem
+*.key
+id_ed25519
+id_rsa
+.vault_pass*
+vault-password*

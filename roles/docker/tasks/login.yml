@@ -1,0 +1,33 @@
+---
+- name: Install Python requests for Docker authentication
+  ansible.builtin.package:
+    name: python3-requests
+    state: present
+
+- name: Create student Docker configuration directory
+  become: false
+  ansible.builtin.file:
+    path: /home/student/.docker
+    state: directory
+    owner: student
+    group: student
+    mode: '0700'
+
+- name: Login to Docker Hub as student
+  become: false
+  community.docker.docker_login:
+    username: "{{ vault_dockerhub_username }}"
+    password: "{{ vault_dockerhub_token }}"
+    registry_url: https://index.docker.io/v1/
+    config_path: /home/student/.docker/config.json
+    state: present
+    reauthorize: false
+  no_log: true
+
+- name: Protect Docker Hub credentials file
+  ansible.builtin.file:
+    path: /home/student/.docker/config.json
+    state: file
+    owner: student
+    group: student
+    mode: '0600'

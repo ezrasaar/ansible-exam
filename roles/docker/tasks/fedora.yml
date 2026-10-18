@@ -1,0 +1,37 @@
+---
+- name: Install RPM Python bindings on Fedora
+  ansible.builtin.dnf5:
+    name: python3-rpm
+    state: present
+
+- name: Gather installed Fedora packages
+  ansible.builtin.package_facts:
+    manager: rpm
+
+- name: Remove installed conflicting Fedora packages
+  ansible.builtin.dnf5:
+    name: "{{ docker_fedora_conflicts_installed }}"
+    state: absent
+  vars:
+    docker_fedora_conflicts_installed: >-
+      {{
+        [
+          'podman',
+          'podman-docker',
+          'runc',
+          'docker',
+          'docker-common',
+          'docker-engine'
+        ]
+        | select('in', ansible_facts.packages)
+        | list
+      }}
+  when: docker_fedora_conflicts_installed | length > 0
+
+- name: Add official Docker RPM repository
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/fedora/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    owner: root
+    group: root
+    mode: '0644'

@@ -1,0 +1,5 @@
+---
+- name: Reboot server
+  ansible.builtin.reboot:
+    reboot_timeout: 900
+    post_reboot_delay: 10

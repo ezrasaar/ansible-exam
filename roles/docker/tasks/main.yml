@@ -1,0 +1,17 @@
+---
+- name: Prepare Docker repository on Ubuntu
+  ansible.builtin.import_tasks: ubuntu.yml
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Prepare Docker repository on Fedora
+  ansible.builtin.import_tasks: fedora.yml
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Apply repository changes before Docker installation
+  ansible.builtin.meta: flush_handlers
+
+- name: Install and configure Docker Engine
+  ansible.builtin.import_tasks: install.yml
+
+- name: Configure Docker Hub authentication
+  ansible.builtin.import_tasks: login.yml

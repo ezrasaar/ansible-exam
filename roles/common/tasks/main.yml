@@ -1,0 +1,9 @@
+---
+- name: Configure student account
+  ansible.builtin.import_tasks: student.yml
+
+- name: Remove sudo from bootstrap user
+  ansible.builtin.import_tasks: remove_sudo.yml
+
+- name: Update packages and handle reboot
+  ansible.builtin.import_tasks: updates.yml

@@ -1,0 +1,45 @@
+---
+- name: Verify connectivity and prepare student
+  hosts: servers
+  gather_facts: false
+
+  tasks:
+    - name: Ping managed servers
+      ansible.builtin.ping:
+
+    - name: Check if student exists
+      ansible.builtin.getent:
+        database: passwd
+        key: student
+        fail_key: false
+
+    - name: Gather facts for initial setup
+      ansible.builtin.setup:
+      when: ansible_facts.getent_passwd['student'] | default([], true) | length == 0
+
+    - name: Create student on first run
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: student.yml
+      when: ansible_facts.getent_passwd['student'] | default([], true) | length == 0
+
+    - name: Switch Ansible connection to student
+      ansible.builtin.set_fact:
+        ansible_user: student
+
+    - name: Reset SSH connection
+      ansible.builtin.meta: reset_connection
+
+    - name: Verify student sudo access
+      become: true
+      ansible.builtin.ping:
+
+- name: Configure managed servers
+  hosts: servers
+  gather_facts: true
+  become: true
+
+  roles:
+    - common
+    - docker
+    - app

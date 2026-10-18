@@ -1,0 +1,12 @@
+[debian]
+ubuntu ansible_host=192.168.208.137 ansible_user=ansible ansible_python_interpreter=/usr/bin/python3.10
+
+[non_debian]
+fedora ansible_host=192.168.208.134 ansible_user=ansible ansible_python_interpreter=/usr/bin/python3.14
+
+[non_debian:vars]
+ansible_ssh_use_tty=false
+
+[servers:children]
+debian
+non_debian

@@ -1,0 +1,5 @@
+# Preserve original Ansible execution output
+evidence/*.txt whitespace=-blank-at-eol,-blank-at-eof
+
+# Preserve original Docker and HTTP logs
+logs/*.log whitespace=-blank-at-eol,-blank-at-eof

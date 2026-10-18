@@ -1,0 +1,22 @@
+---
+- name: Run nginx application container
+  become: false
+  community.docker.docker_container:
+    name: exam-app
+    image: nginx:alpine
+    state: started
+    pull: missing
+    detach: true
+    published_ports:
+      - "8080:80"
+    restart_policy: unless-stopped
+    env: >-
+      {{
+        dict(
+          lookup('ansible.builtin.file', playbook_dir ~ '/files/app.env').splitlines()
+          | map('split', '=', 1)
+        )
+      }}
+
+- name: Verify application and collect evidence
+  ansible.builtin.import_tasks: verify.yml

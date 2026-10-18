@@ -1,0 +1,60 @@
+---
+- name: Update Ubuntu packages
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 86400
+    upgrade: dist
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Ensure Fedora reboot checker is installed
+  ansible.builtin.dnf5:
+    name: dnf5-plugins
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Update Fedora packages
+  ansible.builtin.dnf5:
+    name: "*"
+    state: latest
+    update_cache: true
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Check Ubuntu reboot requirement
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: common_ubuntu_reboot_flag
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Check Fedora reboot requirement
+  ansible.builtin.command:
+    argv:
+      - dnf5
+      - needs-restarting
+  register: common_fedora_reboot_check
+  changed_when: false
+  failed_when: common_fedora_reboot_check.rc not in [0, 1]
+  check_mode: false
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Request Ubuntu reboot when required
+  ansible.builtin.debug:
+    msg: "Ubuntu requires a reboot"
+  changed_when: true
+  notify: Reboot server
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - common_ubuntu_reboot_flag.stat.exists
+    - not ansible_check_mode
+
+- name: Request Fedora reboot when required
+  ansible.builtin.debug:
+    msg: "Fedora requires a reboot"
+  changed_when: true
+  notify: Reboot server
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - common_fedora_reboot_check.rc == 1
+    - not ansible_check_mode
+
+- name: Run pending reboot handler
+  ansible.builtin.meta: flush_handlers

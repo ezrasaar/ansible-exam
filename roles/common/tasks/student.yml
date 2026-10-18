@@ -1,0 +1,30 @@
+---
+- name: Create student user
+  become: true
+  ansible.builtin.user:
+    name: student
+    state: present
+    create_home: true
+    shell: /bin/bash
+    password: >-
+      {{ vault_student_password_hash_ubuntu
+         if ansible_facts['os_family'] == 'Debian'
+         else vault_student_password_hash_fedora }}
+    update_password: on_create
+  no_log: true
+
+- name: Configure SSH key for student
+  become: true
+  ansible.posix.authorized_key:
+    user: student
+    state: present
+    key: "{{ lookup('file', '/home/ansible/.ssh/id_ed25519.pub') }}"
+
+- name: Allow student to use sudo
+  become: true
+  community.general.sudoers:
+    name: student-access
+    user: student
+    commands: ALL
+    nopassword: true
+    state: present

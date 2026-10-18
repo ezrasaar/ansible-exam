@@ -1,0 +1,27 @@
+---
+- name: Read existing group memberships
+  ansible.builtin.getent:
+    database: group
+    split: ':'
+
+- name: Remove bootstrap user from admin groups
+  ansible.builtin.user:
+    name: "{{ bootstrap_user }}"
+    state: present
+    groups: >-
+      {{
+        ansible_facts.getent_group
+        | dict2items
+        | selectattr('value.2', 'search',
+            '(^|,)' ~ bootstrap_user ~ '(,|$)')
+        | rejectattr('key', 'in', ['sudo', 'wheel'])
+        | map(attribute='key')
+        | join(',')
+      }}
+    append: false
+
+- name: Remove Fedora bootstrap sudoers rule
+  community.general.sudoers:
+    name: "{{ bootstrap_user }}"
+    state: absent
+  when: ansible_facts['os_family'] == 'RedHat'
